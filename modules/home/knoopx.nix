@@ -10,7 +10,7 @@
       package = inputs.knoopx.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
       theme = {
-        iconTheme = "Adwaita";
+        iconTheme = "Yaru";
 
         background = {
           primary = "rgba(30, 30, 46, 1.0)";
