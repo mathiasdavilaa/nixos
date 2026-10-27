@@ -4,7 +4,7 @@ Meu flake pessoal com **flake-parts**, **import-tree** e **Home Manager**.
 
 ## 1. Preparar o novo computador
 
-Instale primeiro o **NixOS 26.05** normalmente e inicialize o sistema. Use o usuário correspondente ao perfil escolhido:
+Instale primeiro o **NixOS** normalmente e inicialize o sistema. Use o usuário correspondente ao perfil escolhido:
 
 | Perfil | Usuário | Hostname atual |
 | --- | --- | --- |
