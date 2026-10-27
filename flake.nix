@@ -34,6 +34,11 @@
     knoopx = {
       url = "github:knoopx/astal-shell";
     };
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

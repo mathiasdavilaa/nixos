@@ -14,8 +14,8 @@
       #pkgs to use on computers
       fastfetch
       zed-editor
-      zapzap
       nautilus
+      zapzap
       claude-code
       codex
       #codex-acp
@@ -28,6 +28,7 @@
       playerctl
       mpv
       imv
+      xwayland-satellite
     ];
 
     programs.steam = {

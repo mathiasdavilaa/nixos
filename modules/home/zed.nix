@@ -16,15 +16,21 @@
       flakePath = "${config.home.homeDirectory}/nixos";
       nixosConfig = "(builtins.getFlake \"${flakePath}\").nixosConfigurations.${host}";
 
-      codexAcp = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.codex-acp;
+      # Usa os pacotes recentes somente para os agentes, sem atualizar o sistema.
+      # allowUnfree e necessario porque o Claude Code e um binario proprietario.
+      unstablePkgs = import inputs.nixpkgs-unstable {
+        system = pkgs.stdenv.hostPlatform.system;
+        config.allowUnfree = true;
+      };
+      codexAcp = unstablePkgs.codex-acp;
+      claudeAcp = unstablePkgs.claude-agent-acp;
 
       # Tarefas executam scripts Bash mesmo usando Fish como shell padrao.
       bash = "${pkgs.bash}/bin/bash";
     in
     {
-      # Instala a versao moderna do adaptador ACP sem recompilar a versao
-      # antiga (0.13.0) do nixpkgs 26.05, que falhava no linker.
-      home.packages = [ codexAcp ];
+      # Adaptadores ACP instalados de forma declarativa.
+      home.packages = [ codexAcp claudeAcp ];
 
       programs.zed-editor = {
         enable = true;
@@ -150,33 +156,54 @@
             formatting.command = [ "${pkgs.nixfmt}/bin/nixfmt" ];
           };
 
-          # Codex ACP instalado declarativamente pelo Home Manager.
-          # Autenticacao do Codex e feita no primeiro uso dentro do Zed.
+          # Agentes externos ACP gerenciados pelo Nix, sem ACP Registry.
           agent_servers = {
-            "codex-acp" = {
+            "Codex (NixOS)" = {
               type = "custom";
               command = "${codexAcp}/bin/codex-acp";
               args = [ ];
+              env = {
+                # Edita arquivos do projeto no sandbox; pede escalacao fora dele.
+                INITIAL_AGENT_MODE = "workspace-write";
+                CODEX_CONFIG = builtins.toJSON {
+                  approval_policy = "on-request";
+                  sandbox_mode = "workspace-write";
+                };
+              };
+            };
+            "Claude Code (NixOS)" = {
+              type = "custom";
+              command = "${claudeAcp}/bin/claude-agent-acp";
+              args = [ ];
               env = { };
             };
-            "claude-acp".type = "registry";
           };
 
-          # Essas permissoes valem para ferramentas gerenciadas pelo Zed;
-          # Codex e Claude externos podem ter controles adicionais.
+          # Camada de aprovacao do Zed. A configuracao nativa de cada agente
+          # tambem continua valendo; "allow" aqui nao desabilita seu sandbox.
           agent.tool_permissions = {
-            default = "confirm";
-            tools.terminal = {
-              default = "confirm";
-              always_allow = [
-                { pattern = "^git\\s+(status|log|diff)\\b"; }
-                { pattern = "^nix\\s+flake\\s+check\\b"; }
+            default = "allow";
+            tools = {
+              terminal = {
+                # Comandos nao reconhecidos pedem permissao; os triviais passam.
+                default = "confirm";
+                always_allow = [
+                  { pattern = "^git\\s+(status|log|diff|show)\\b"; }
+                  { pattern = "^nix\\s+(eval|flake\\s+(check|show))\\b"; }
+                  { pattern = "^(rg|grep|ls|pwd|cat|head|tail|fd)\\b"; }
+                ];
+                always_confirm = [
+                  { pattern = "\\bsudo\\b"; }
+                  { pattern = "\\bnixos-rebuild\\b"; }
+                  { pattern = "\\bgit\\s+(push|clean|reset\\s+--hard)\\b"; }
+                  { pattern = "\\brm\\s+-[[:alnum:]]*r[[:alnum:]]*f\\b"; }
+                ];
+              };
+              edit_file.always_confirm = [
+                { pattern = "(\\.env($|\\.)|/(\\.ssh|\\.aws|\\.gnupg)/)"; }
               ];
-              always_confirm = [
-                { pattern = "\\bsudo\\s"; }
-                { pattern = "\\bgit\\s+push\\b"; }
-                { pattern = "\\bgit\\s+reset\\s+--hard\\b"; }
-                { pattern = "\\bnixos-rebuild\\b"; }
+              write_file.always_confirm = [
+                { pattern = "(\\.env($|\\.)|/(\\.ssh|\\.aws|\\.gnupg)/)"; }
               ];
             };
           };

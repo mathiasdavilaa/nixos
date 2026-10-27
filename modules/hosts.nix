@@ -2,9 +2,14 @@
 # Normalmente você não precisa editá-lo para instalar ou configurar programas.
 { config, inputs, ... }:
 let
-  mkHost = { hostModule, username }:
+  mkHost =
+    { hostModule, username }:
     inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+
+      specialArgs = {
+        inherit inputs;
+      };
 
       modules = [
         inputs.home-manager.nixosModules.home-manager
@@ -15,6 +20,10 @@ let
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
+
+            extraSpecialArgs = {
+              inherit inputs;
+            };
 
             # Preserva arquivos preexistentes antes de o Home Manager
             # substitui-los por links gerenciados declarativamente.
@@ -29,7 +38,8 @@ let
             };
           };
         }
-      ] ++ builtins.attrValues config.flake.nixosModules;
+      ]
+      ++ builtins.attrValues config.flake.nixosModules;
     };
 in
 {
