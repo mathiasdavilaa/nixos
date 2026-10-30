@@ -16,10 +16,12 @@
       zed-editor
       nautilus
       zapzap
+      claude-code
+      codex
+      #codex-acp
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       mangohud
       prismlauncher
-      opencode
 
       #things that make computers works
       brightnessctl
@@ -41,6 +43,5 @@
         renice = 10;
       };
     };
-
   };
 }

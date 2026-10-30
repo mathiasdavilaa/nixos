@@ -2,7 +2,10 @@
 # Adaptado de modules/system/base.nix do flake antigo.
 {
   flake.nixosModules.system = { pkgs, ... }: {
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    nix.settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     nix.optimise.automatic = true;
     nixpkgs.config.allowUnfree = true; # Discord/Claude e outros pacotes do exemplo.
     networking.networkmanager.enable = true;
@@ -12,7 +15,10 @@
     i18n.defaultLocale = "en_US.UTF-8";
     i18n.extraLocaleSettings = builtins.listToAttrs (
       map
-        (name: { inherit name; value = "pt_BR.UTF-8"; })
+        (name: {
+          inherit name;
+          value = "pt_BR.UTF-8";
+        })
         [
           "LC_ADDRESS"
           "LC_IDENTIFICATION"

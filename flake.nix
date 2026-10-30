@@ -30,10 +30,11 @@
 
     areofyl-fetch.url = "github:areofyl/fetch";
 
+    pleamar.url = "github:k4ditano/pleamar";
+
     plasma-manager.url = "github:nix-community/plasma-manager";
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.inputs.home-manager.follows = "home-manager";
-
   };
 
   outputs =

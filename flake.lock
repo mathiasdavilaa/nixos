@@ -347,6 +347,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1790463110,
+        "narHash": "sha256-hKlVl12B1dF0Q5vd9dY3lIJM5mFGWYSlXwSLAqHZ1+s=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "noctalia": {
       "inputs": {
         "nixpkgs": [
@@ -390,6 +406,24 @@
         "type": "github"
       }
     },
+    "pleamar": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1793032270,
+        "narHash": "sha256-lJNudCMY3rW3V4hwr+QK42I+SuW5UHxyNyejbIuX8+U=",
+        "owner": "k4ditano",
+        "repo": "pleamar",
+        "rev": "76a460473ebf329482e546bb0a9d687635262219",
+        "type": "github"
+      },
+      "original": {
+        "owner": "k4ditano",
+        "repo": "pleamar",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "areofyl-fetch": "areofyl-fetch",
@@ -403,6 +437,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia",
         "plasma-manager": "plasma-manager",
+        "pleamar": "pleamar",
         "sysc-greet": "sysc-greet",
         "zen-browser": "zen-browser"
       }
