@@ -1,7 +1,7 @@
 { inputs, ... }:
 
 {
-  flake.nixosModules.greet = { pkgs, ... }: {
+  flake.nixosModules.greet = { config, pkgs, ... }: {
     # sysc-greet:
     # https://github.com/Nomadcxx/sysc-greet
     # https://nomadcxx.github.io/sysc-greet/
@@ -17,8 +17,16 @@
       compositor = "niri";
 
       # Reutiliza o Niri já disponível no Nixpkgs.
-      compositorCommand =
-        "${pkgs.niri}/bin/niri -c /etc/greetd/niri-greeter-config.kdl";
+      compositorCommand = "${pkgs.niri}/bin/niri -c /etc/greetd/niri-greeter-config.kdl";
     };
+
+    environment.systemPackages = [
+      config.services.displayManager.sessionData.desktops
+    ];
+
+    environment.pathsToLink = [
+      "/share/wayland-sessions"
+      "/share/xsessions"
+    ];
   };
 }

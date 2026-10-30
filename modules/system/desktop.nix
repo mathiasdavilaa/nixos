@@ -12,7 +12,7 @@
     #services.displayManager.defaultSession = "niri";
 
     programs.niri.enable = true;
-    #services.desktopManager.plasma6.enable = true;
+    services.desktopManager.plasma6.enable = true;
 
     xdg.portal = {
       enable = true;
@@ -20,7 +20,10 @@
         xdg-desktop-portal-gnome
         xdg-desktop-portal-gtk
       ];
-      config.niri.default = [ "gnome" "gtk" ];
+      config.niri.default = [
+        "gnome"
+        "gtk"
+      ];
     };
   };
 }
