@@ -5,20 +5,13 @@
     # são escolhidos pelo próprio Nixcord.
     environment.systemPackages = with pkgs; [
       #essencials things to use computers
-      ghostty
-      git
       fuzzel
       lazydocker
       lazygit
 
       #pkgs to use on computers
-      fastfetch
-      zed-editor
       nautilus
       zapzap
-      claude-code
-      codex
-      #codex-acp
       inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       mangohud
       prismlauncher
