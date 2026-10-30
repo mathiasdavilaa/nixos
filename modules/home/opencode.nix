@@ -1,12 +1,14 @@
-# Codex CLI + Claude Code, independentemente do Zed.
-# Coloque em modules/home/ai-agents.nix.
-# Este modulo e descoberto pelo import-tree e registrado no Home Manager.
+# OpenCode com OpenAI/ChatGPT, mantendo os CLIs Codex e Claude Code existentes.
+# Coloque em modules/home/opencode.nix e remova o antigo ai-agents.nix.
+# O import-tree registra este módulo no Home Manager dos dois hosts.
+# https://opencode.ai/v2/docs/providers/#chatgpt
+# https://opencode.ai/v2/docs/models/
 { inputs, ... }:
 {
-  flake.homeModules.ai-agents =
+  flake.homeModules.opencode =
     { pkgs, ... }:
     let
-      # Evita misturar o nixpkgs principal (26.05) com os agentes mais recentes.
+      # Mantém o Nixpkgs principal (26.05) e usa unstable apenas para estas ferramentas.
       # O Claude Code e unfree, por isso habilitamos allowUnfree somente aqui.
       unstable = import inputs.nixpkgs-unstable {
         system = pkgs.stdenv.hostPlatform.system;
@@ -17,7 +19,6 @@
       # Ferramentas utilitarias que os agentes costumam utilizar no terminal.
       # Inclui as dependencias do sandbox Linux do Claude Code.
       home.packages = with pkgs; [
-        git
         ripgrep
         fd
         jq
@@ -25,6 +26,26 @@
         socat
       ];
 
+      # Usa a integração nativa OpenAI/ChatGPT.
+      # Após o rebuild, execute `opencode auth login` e selecione OpenAI/ChatGPT.
+      # O login fica a cargo do próprio OpenCode, fora da configuração Nix.
+      # A revisão atual de programs.opencode falha ao usar package = null.
+      # O Home Manager gerencia o JSON diretamente; o pacote fica no NixOS.
+      xdg.configFile."opencode/opencode.json".text = builtins.toJSON {
+        "$schema" = "https://opencode.ai/config.json";
+        # A versão do programa é atualizada pelo flake.
+        # Formato aceito pelo OpenCode 1.x e normalizado pelo 2.x.
+        autoupdate = false;
+        model = "openai/gpt-6.1-sol";
+
+        provider.openai.models."gpt-6.1-sol".options = {
+          reasoningEffort = "high";
+        };
+      };
+
+      # As opções abaixo continuam valendo para os CLIs independentes.
+      # O OpenCode executa seu próprio agente usando os modelos da OpenAI;
+      # ele não executa o Codex CLI nem herda seu sandbox ou suas regras.
       # Codex CLI: executa normalmente com `codex` no terminal ou por SSH.
       programs.codex = {
         enable = true;
@@ -91,9 +112,18 @@
 
             # Protege credenciais tambem contra comandos Bash sandboxed.
             credentials.files = [
-              { path = "~/.ssh"; mode = "deny"; }
-              { path = "~/.aws"; mode = "deny"; }
-              { path = "~/.gnupg"; mode = "deny"; }
+              {
+                path = "~/.ssh";
+                mode = "deny";
+              }
+              {
+                path = "~/.aws";
+                mode = "deny";
+              }
+              {
+                path = "~/.gnupg";
+                mode = "deny";
+              }
             ];
           };
         };
